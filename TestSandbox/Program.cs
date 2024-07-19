@@ -1,6 +1,6 @@
 ﻿using NLog;
 
-namespace TstSerialization
+namespace TestSandbox
 {
     internal class Program
     {
