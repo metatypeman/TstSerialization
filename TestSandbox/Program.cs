@@ -1,4 +1,5 @@
 ﻿using NLog;
+using TestSandbox.SerializedObjects;
 
 namespace TestSandbox
 {
@@ -10,7 +11,16 @@ namespace TestSandbox
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            _logger.Info("Hello, World!");
+            Case1();
+        }
+
+        private static void Case1()
+        {
+            _logger.Info("Begin");
+
+            var engine = new Engine();
+
+            _logger.Info("End");
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
