@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections;
+using System.Text;
 
 namespace TestSandbox.Helpers
 {
@@ -35,35 +36,6 @@ namespace TestSandbox.Helpers
             return sb.ToString();
         }
 
-        public static string GetDefaultToShortStringInformation(this IObjectToShortString targetObject, uint n)
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var sb = new StringBuilder();
-            var nameOfType = targetObject.GetType().FullName;
-            sb.AppendLine($"{spaces}Begin {nameOfType}");
-            sb.Append(targetObject.PropertiesToShortString(nextN));
-            sb.AppendLine($"{spaces}End {nameOfType}");
-            return sb.ToString();
-        }
-
-        public static string GetDefaultToBriefStringInformation(this IObjectToBriefString targetObject, uint n)
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var sb = new StringBuilder();
-            var nameOfType = targetObject.GetType().FullName;
-            sb.AppendLine($"{spaces}Begin {nameOfType}");
-            sb.Append(targetObject.PropertiesToBriefString(nextN));
-            sb.AppendLine($"{spaces}End {nameOfType}");
-            return sb.ToString();
-        }
-
-        public static string GetDefaultToDbgStringInformation(this IObjectToDbgString targetObject, uint n)
-        {
-            return targetObject.PropertiesToDbgString(n);
-        }
-
         public static void PrintObjProp(this StringBuilder sb, uint n, string propName, IObjectToString obj)
         {
             var spaces = Spaces(n);
@@ -77,57 +49,6 @@ namespace TestSandbox.Helpers
             {
                 sb.AppendLine($"{spaces}Begin {propName}");
                 sb.Append(obj.ToString(nextN));
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
-        public static void PrintShortObjProp(this StringBuilder sb, uint n, string propName, IObjectToShortString obj)
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-
-            if (obj == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                sb.Append(obj.ToShortString(nextN));
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
-        public static void PrintBriefObjProp(this StringBuilder sb, uint n, string propName, IObjectToBriefString obj)
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-
-            if (obj == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                sb.Append(obj.ToBriefString(nextN));
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
-        public static void PrintDbgObjProp(this StringBuilder sb, uint n, string propName, IObjectToDbgString obj)
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-
-            if (obj == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                sb.Append(obj.ToDbgString(nextN));
                 sb.AppendLine($"{spaces}End {propName}");
             }
         }
@@ -225,93 +146,6 @@ namespace TestSandbox.Helpers
             }
         }
 
-        public static void PrintShortObjListProp<T>(this StringBuilder sb, uint n, string propName, IEnumerable<T> items)
-            where T : IObjectToShortString
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var nextNSpaces = Spaces(nextN);
-
-            if (items == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                foreach (var item in items)
-                {
-                    if (item == null)
-                    {
-                        sb.AppendLine($"{nextNSpaces}NULL");
-                    }
-                    else
-                    {
-                        sb.Append(item.ToShortString(nextN));
-                    }
-                }
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
-        public static void PrintBriefObjListProp<T>(this StringBuilder sb, uint n, string propName, IEnumerable<T> items)
-            where T : IObjectToBriefString
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var nextNSpaces = Spaces(nextN);
-
-            if (items == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                foreach (var item in items)
-                {
-                    if (item == null)
-                    {
-                        sb.AppendLine($"{nextNSpaces}NULL");
-                    }
-                    else
-                    {
-                        sb.Append(item.ToBriefString(nextN));
-                    }
-                }
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
-        public static void PrintDbgObjListProp<T>(this StringBuilder sb, uint n, string propName, IEnumerable<T> items)
-            where T : IObjectToDbgString
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var nextNSpaces = Spaces(nextN);
-
-            if (items == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                foreach (var item in items)
-                {
-                    if (item == null)
-                    {
-                        sb.AppendLine($"{nextNSpaces}NULL");
-                    }
-                    else
-                    {
-                        sb.Append(item.ToDbgString(nextN));
-                    }
-                }
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
         public static void PrintValueTypesListProp<T>(this StringBuilder sb, uint n, string propName, IEnumerable<T> items)
             where T : struct
         {
@@ -367,72 +201,6 @@ namespace TestSandbox.Helpers
             }
         }
 
-        public static void PrintShortObjDict_1_Prop<K, V>(this StringBuilder sb, uint n, string propName, IDictionary<K, V> items)
-            where K : IObjectToShortString
-            where V : IObjectToShortString
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var nextNSpaces = Spaces(nextN);
-            var nextNextN = nextN + IndentationStep;
-            var nextNextNSpaces = Spaces(nextNextN);
-            var nextNextNextN = nextNextN + IndentationStep;
-
-            if (items == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                foreach (var item in items)
-                {
-                    sb.AppendLine($"{nextNSpaces}Begin Item");
-                    sb.AppendLine($"{nextNextNSpaces}Beign Key");
-                    sb.Append(item.Key.ToShortString(nextNextNextN));
-                    sb.AppendLine($"{nextNextNSpaces}End Key");
-                    sb.AppendLine($"{nextNextNSpaces}Begin Value");
-                    sb.Append(item.Value.ToShortString(nextNextNextN));
-                    sb.AppendLine($"{nextNextNSpaces}End Value");
-                    sb.AppendLine($"{nextNSpaces}End Item");
-                }
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
-        public static void PrintBriefObjDict_1_Prop<K, V>(this StringBuilder sb, uint n, string propName, IDictionary<K, V> items)
-            where K : IObjectToBriefString
-            where V : IObjectToBriefString
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var nextNSpaces = Spaces(nextN);
-            var nextNextN = nextN + IndentationStep;
-            var nextNextNSpaces = Spaces(nextNextN);
-            var nextNextNextN = nextNextN + IndentationStep;
-
-            if (items == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                foreach (var item in items)
-                {
-                    sb.AppendLine($"{nextNSpaces}Begin Item");
-                    sb.AppendLine($"{nextNextNSpaces}Beign Key");
-                    sb.Append(item.Key.ToBriefString(nextNextNextN));
-                    sb.AppendLine($"{nextNextNSpaces}End Key");
-                    sb.AppendLine($"{nextNextNSpaces}Begin Value");
-                    sb.Append(item.Value.ToBriefString(nextNextNextN));
-                    sb.AppendLine($"{nextNextNSpaces}End Value");
-                    sb.AppendLine($"{nextNSpaces}End Item");
-                }
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
         public static void PrintObjDict_2_Prop<K, V>(this StringBuilder sb, uint n, string propName, IDictionary<K, V> items)
             where K : struct
             where V : IObjectToString
@@ -464,68 +232,6 @@ namespace TestSandbox.Helpers
             }
         }
 
-        public static void PrintShortObjDict_2_Prop<K, V>(this StringBuilder sb, uint n, string propName, IEnumerable<KeyValuePair<K, V>> items)
-            where K : struct
-            where V : IObjectToShortString
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var nextNSpaces = Spaces(nextN);
-            var nextNextN = nextN + IndentationStep;
-            var nextNextNSpaces = Spaces(nextNextN);
-            var nextNextNextN = nextNextN + IndentationStep;
-
-            if (items == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                foreach (var item in items)
-                {
-                    sb.AppendLine($"{nextNSpaces}Begin Item");
-                    sb.AppendLine($"{nextNextNSpaces}Key = {item.Key}");
-                    sb.AppendLine($"{nextNextNSpaces}Begin Value");
-                    sb.Append(item.Value.ToShortString(nextNextNextN));
-                    sb.AppendLine($"{nextNextNSpaces}End Value");
-                    sb.AppendLine($"{nextNSpaces}End Item");
-                }
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
-        public static void PrintBriefObjDict_2_Prop<K, V>(this StringBuilder sb, uint n, string propName, IEnumerable<KeyValuePair<K, V>> items)
-            where K : struct
-            where V : IObjectToBriefString
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var nextNSpaces = Spaces(nextN);
-            var nextNextN = nextN + IndentationStep;
-            var nextNextNSpaces = Spaces(nextNextN);
-            var nextNextNextN = nextNextN + IndentationStep;
-
-            if (items == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                foreach (var item in items)
-                {
-                    sb.AppendLine($"{nextNSpaces}Begin Item");
-                    sb.AppendLine($"{nextNextNSpaces}Key = {item.Key}");
-                    sb.AppendLine($"{nextNextNSpaces}Begin Value");
-                    sb.Append(item.Value.ToBriefString(nextNextNextN));
-                    sb.AppendLine($"{nextNextNSpaces}End Value");
-                    sb.AppendLine($"{nextNSpaces}End Item");
-                }
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
         public static void PrintObjDict_3_Prop<V>(this StringBuilder sb, uint n, string propName, IEnumerable<KeyValuePair<string, V>> items)
             where V : IObjectToString
         {
@@ -549,66 +255,6 @@ namespace TestSandbox.Helpers
                     sb.AppendLine($"{nextNextNSpaces}Key = {item.Key}");
                     sb.AppendLine($"{nextNextNSpaces}Begin Value");
                     sb.Append(item.Value.ToString(nextNextNextN));
-                    sb.AppendLine($"{nextNextNSpaces}End Value");
-                    sb.AppendLine($"{nextNSpaces}End Item");
-                }
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
-        public static void PrintShortObjDict_3_Prop<V>(this StringBuilder sb, uint n, string propName, IEnumerable<KeyValuePair<string, V>> items)
-            where V : IObjectToShortString
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var nextNSpaces = Spaces(nextN);
-            var nextNextN = nextN + IndentationStep;
-            var nextNextNSpaces = Spaces(nextNextN);
-            var nextNextNextN = nextNextN + IndentationStep;
-
-            if (items == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                foreach (var item in items)
-                {
-                    sb.AppendLine($"{nextNSpaces}Begin Item");
-                    sb.AppendLine($"{nextNextNSpaces}Key = {item.Key}");
-                    sb.AppendLine($"{nextNextNSpaces}Begin Value");
-                    sb.Append(item.Value.ToShortString(nextNextNextN));
-                    sb.AppendLine($"{nextNextNSpaces}End Value");
-                    sb.AppendLine($"{nextNSpaces}End Item");
-                }
-                sb.AppendLine($"{spaces}End {propName}");
-            }
-        }
-
-        public static void PrintBriefObjDict_3_Prop<K, V>(this StringBuilder sb, uint n, string propName, IEnumerable<KeyValuePair<string, V>> items)
-            where V : IObjectToBriefString
-        {
-            var spaces = Spaces(n);
-            var nextN = n + IndentationStep;
-            var nextNSpaces = Spaces(nextN);
-            var nextNextN = nextN + IndentationStep;
-            var nextNextNSpaces = Spaces(nextNextN);
-            var nextNextNextN = nextNextN + IndentationStep;
-
-            if (items == null)
-            {
-                sb.AppendLine($"{spaces}{propName} = NULL");
-            }
-            else
-            {
-                sb.AppendLine($"{spaces}Begin {propName}");
-                foreach (var item in items)
-                {
-                    sb.AppendLine($"{nextNSpaces}Begin Item");
-                    sb.AppendLine($"{nextNextNSpaces}Key = {item.Key}");
-                    sb.AppendLine($"{nextNextNSpaces}Begin Value");
-                    sb.Append(item.Value.ToBriefString(nextNextNextN));
                     sb.AppendLine($"{nextNextNSpaces}End Value");
                     sb.AppendLine($"{nextNSpaces}End Item");
                 }
@@ -754,48 +400,6 @@ namespace TestSandbox.Helpers
                 foreach (var item in items)
                 {
                     sb.Append(item.ToString(4u));
-                }
-            }
-            sb.AppendLine("End List");
-            return sb.ToString();
-        }
-
-        public static string WriteListToShortString<T>(this IEnumerable<T> items)
-            where T : IObjectToShortString
-        {
-            if (items == null)
-            {
-                return "NULL";
-            }
-
-            var sb = new StringBuilder();
-            sb.AppendLine("Begin List");
-            if (!items.IsNullOrEmpty())
-            {
-                foreach (var item in items)
-                {
-                    sb.Append(item.ToShortString(4u));
-                }
-            }
-            sb.AppendLine("End List");
-            return sb.ToString();
-        }
-
-        public static string WriteListToBriefString<T>(this IEnumerable<T> items)
-            where T : IObjectToBriefString
-        {
-            if (items == null)
-            {
-                return "NULL";
-            }
-
-            var sb = new StringBuilder();
-            sb.AppendLine("Begin List");
-            if (!items.IsNullOrEmpty())
-            {
-                foreach (var item in items)
-                {
-                    sb.Append(item.ToBriefString(4u));
                 }
             }
             sb.AppendLine("End List");

@@ -1,6 +1,9 @@
-﻿namespace TestSandbox.SerializedObjects
+﻿using System.Text;
+using TestSandbox.Helpers;
+
+namespace TestSandbox.SerializedObjects
 {
-    public class Engine
+    public class Engine : IObjectToString
     {
         public Engine()
         {
@@ -15,5 +18,26 @@
         }
 
         private EngineContext _engineContext;
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return ToString(0u);
+        }
+
+        /// <inheritdoc/>
+        public string ToString(uint n)
+        {
+            return this.GetDefaultToStringInformation(n);
+        }
+
+        /// <inheritdoc/>
+        string IObjectToString.PropertiesToString(uint n)
+        {
+            var spaces = DisplayHelper.Spaces(n);
+            var sb = new StringBuilder();
+            sb.PrintObjProp(n, nameof(_engineContext), _engineContext);
+            return sb.ToString();
+        }
     }
 }

@@ -20,6 +20,8 @@ namespace TestSandbox
 
             var engine = new Engine();
 
+            _logger.Info($"engine = {engine}");
+
             _logger.Info("End");
         }
 
