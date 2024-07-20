@@ -14,6 +14,7 @@ namespace TestSandbox.Serialization
         private string _dirName;
 
         private Dictionary<object, ObjectPtr> _serializedObjects = new Dictionary<object, ObjectPtr>();
+        private Dictionary<string, object> _deserializedObject = new Dictionary<string, object>();
 
         public void Serialize<TPlainObject>(ISerializable<TPlainObject> serializable)
             where TPlainObject : class, new()
@@ -83,6 +84,8 @@ namespace TestSandbox.Serialization
 
             File.WriteAllText(fullFileName, JsonConvert.SerializeObject(plainObject));
 
+            _serializedObjects[serializable] = objectPtr;
+
             return objectPtr;
         }
 
@@ -102,7 +105,42 @@ namespace TestSandbox.Serialization
 
             _logger.Info($"rootObject = {rootObject}");
 
-            var type = Type.GetType(rootObject.Data.TypeName);
+            return NDeserialize<T, TPlainObject>(rootObject.Data);
+        }
+
+        public T GetDeserializedObject<T, TPlainObject>(ObjectPtr objectPtr)
+            where T : ISerializable<TPlainObject>, new()
+            where TPlainObject : class, new()
+        {
+            _logger.Info($"objectPtr = {objectPtr}");
+
+            var instanceId = objectPtr.Id;
+
+            if(_deserializedObject.ContainsKey(instanceId))
+            {
+                return (T)_deserializedObject[instanceId];
+            }
+
+            return NDeserialize<T, TPlainObject>(objectPtr);
+        }
+
+        private T NDeserialize<T, TPlainObject>(ObjectPtr objectPtr)
+            where T : ISerializable<TPlainObject>, new()
+            where TPlainObject : class, new()
+        {
+            _logger.Info($"objectPtr = {objectPtr}");
+
+            var fileName = $"{objectPtr.Id}.json";
+
+            var fullFileName = Path.Combine(_dirName, fileName);
+
+            _logger.Info($"fullFileName = {fullFileName}");
+
+            var plainObject = JsonConvert.DeserializeObject<TPlainObject>(File.ReadAllText(fullFileName));
+
+            _logger.Info($"plainObject = {plainObject}");
+
+            var type = Type.GetType(objectPtr.TypeName);
 
             _logger.Info($"type.FullName = {type.FullName}");
 
@@ -110,7 +148,15 @@ namespace TestSandbox.Serialization
 
             _logger.Info($"obj = {obj}");
 
-            throw new NotImplementedException();
+            var serializable = (ISerializable<TPlainObject>)obj;
+
+            serializable.OnReadPlainObject(plainObject, this);
+
+            _logger.Info($"serializable = {serializable}");
+
+            _deserializedObject[objectPtr.Id] = obj;
+
+            return (T)obj;
         }
     }
 }

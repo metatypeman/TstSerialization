@@ -26,6 +26,11 @@ namespace TestSandbox.SerializedObjects
             plainObject.EngineContext = serializer.GetSerializedObjectPtr(_engineContext);
         }
 
+        void ISerializable<EnginePo>.OnReadPlainObject(EnginePo plainObject, ISerializer serializer)
+        {
+            _engineContext = serializer.GetDeserializedObject<EngineContext, EngineContextPo>(plainObject.EngineContext);
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {

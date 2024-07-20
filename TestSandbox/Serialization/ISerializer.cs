@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace TestSandbox.Serialization
+﻿namespace TestSandbox.Serialization
 {
     public interface ISerializer
     {
@@ -12,5 +10,9 @@ namespace TestSandbox.Serialization
         T Deserialize<T, TPlainObject>()
             where T : ISerializable<TPlainObject>, new()
             where TPlainObject: class, new();
+
+        T GetDeserializedObject<T, TPlainObject>(ObjectPtr objectPtr)
+            where T : ISerializable<TPlainObject>, new()
+            where TPlainObject : class, new();
     }
 }

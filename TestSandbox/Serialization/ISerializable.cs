@@ -6,5 +6,6 @@ namespace TestSandbox.Serialization
         where TPlainObject : class, new()
     {
         void OnWritePlainObject(TPlainObject plainObject, ISerializer serializer);
+        void OnReadPlainObject(TPlainObject plainObject, ISerializer serializer);
     }
 }

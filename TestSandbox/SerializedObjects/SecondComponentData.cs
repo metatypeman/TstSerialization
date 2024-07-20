@@ -14,6 +14,11 @@ namespace TestSandbox.SerializedObjects
             plainObject.SomeField = SomeField;
         }
 
+        void ISerializable<SecondComponentDataPo>.OnReadPlainObject(SecondComponentDataPo plainObject, ISerializer serializer)
+        {
+            SomeField = plainObject.SomeField;
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {

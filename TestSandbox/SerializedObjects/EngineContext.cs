@@ -16,6 +16,12 @@ namespace TestSandbox.SerializedObjects
             plainObject.SecondComponent = serializer.GetSerializedObjectPtr(SecondComponent);
         }
 
+        void ISerializable<EngineContextPo>.OnReadPlainObject(EngineContextPo plainObject, ISerializer serializer)
+        {
+            FirstComponent = serializer.GetDeserializedObject<FirstComponent, FirstComponentPo>(plainObject.FirstComponent);
+            SecondComponent = serializer.GetDeserializedObject<SecondComponent, SecondComponentPo>(plainObject.SecondComponent);
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {

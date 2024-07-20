@@ -7,6 +7,10 @@ namespace TestSandbox.SerializedObjects
 {
     public class FirstComponent : IObjectToString, ISerializable<FirstComponentPo>
     {
+        public FirstComponent()
+        {
+        }
+
         public FirstComponent(EngineContext engineContext)
         {
             _engineContext = engineContext;
@@ -19,6 +23,11 @@ namespace TestSandbox.SerializedObjects
         void ISerializable<FirstComponentPo>.OnWritePlainObject(FirstComponentPo plainObject, ISerializer serializer)
         {
             plainObject.Data = serializer.GetSerializedObjectPtr(_data);
+        }
+
+        void ISerializable<FirstComponentPo>.OnReadPlainObject(FirstComponentPo plainObject, ISerializer serializer)
+        {
+            _data = serializer.GetDeserializedObject<FirstComponentData, FirstComponentDataPo>(plainObject.Data);
         }
 
         /// <inheritdoc/>

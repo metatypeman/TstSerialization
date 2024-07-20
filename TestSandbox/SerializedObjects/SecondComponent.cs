@@ -7,6 +7,10 @@ namespace TestSandbox.SerializedObjects
 {
     public class SecondComponent: IObjectToString, ISerializable<SecondComponentPo>
     {
+        public SecondComponent()
+        {
+        }
+
         public SecondComponent(EngineContext engineContext)
         {
             _engineContext = engineContext;
@@ -20,6 +24,11 @@ namespace TestSandbox.SerializedObjects
         void ISerializable<SecondComponentPo>.OnWritePlainObject(SecondComponentPo plainObject, ISerializer serializer)
         {
             plainObject.Data = serializer.GetSerializedObjectPtr(_data);
+        }
+
+        void ISerializable<SecondComponentPo>.OnReadPlainObject(SecondComponentPo plainObject, ISerializer serializer)
+        {
+            _data = serializer.GetDeserializedObject<SecondComponentData, SecondComponentDataPo>(plainObject.Data);
         }
 
         /// <inheritdoc/>
