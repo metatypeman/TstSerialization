@@ -7,8 +7,11 @@ namespace TestSandbox.SerializedObjects
 {
     public class FirstComponentData: IObjectToString, ISerializable<FirstComponentDataPo>
     {
+        public int Field1 { get; set; }
+
         void ISerializable<FirstComponentDataPo>.OnWritePlainObject(FirstComponentDataPo plainObject, ISerializer serializer)
         {
+            plainObject.Field1 = Field1;
         }
 
         /// <inheritdoc/>
@@ -28,6 +31,7 @@ namespace TestSandbox.SerializedObjects
         {
             var spaces = DisplayHelper.Spaces(n);
             var sb = new StringBuilder();
+            sb.AppendLine($"{spaces}{nameof(Field1)} = {Field1}");
             return sb.ToString();
         }
     }

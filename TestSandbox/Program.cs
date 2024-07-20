@@ -21,6 +21,8 @@ namespace TestSandbox
             _logger.Info("Begin");
 
             var engine = new Engine();
+            engine._engineContext.FirstComponent._data.Field1 = 16;
+            engine._engineContext.SecondComponent._data.SomeField = 42;
 
             _logger.Info($"engine = {engine}");
 
@@ -36,6 +38,8 @@ namespace TestSandbox
             _logger.Info("Begin");
 
             var engine = new Engine();
+            engine._engineContext.FirstComponent._data.Field1 = 16;
+            engine._engineContext.SecondComponent._data.SomeField = 42;
 
             _logger.Info($"engine = {engine}");
 

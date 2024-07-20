@@ -1,10 +1,13 @@
 ﻿using System.Text;
 using TestSandbox.Helpers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TestSandbox.SerializedObjects.PlainObjects
 {
     public class SecondComponentDataPo : IObjectToString
     {
+        public int SomeField { get; set; }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -22,6 +25,7 @@ namespace TestSandbox.SerializedObjects.PlainObjects
         {
             var spaces = DisplayHelper.Spaces(n);
             var sb = new StringBuilder();
+            sb.AppendLine($"{spaces}{nameof(SomeField)} = {SomeField}");
             return sb.ToString();
         }
     }

@@ -7,8 +7,11 @@ namespace TestSandbox.SerializedObjects
 {
     public class SecondComponentData : IObjectToString, ISerializable<SecondComponentDataPo>
     {
+        public int SomeField { get; set; }
+
         void ISerializable<SecondComponentDataPo>.OnWritePlainObject(SecondComponentDataPo plainObject, ISerializer serializer)
         {
+            plainObject.SomeField = SomeField;
         }
 
         /// <inheritdoc/>
@@ -28,6 +31,7 @@ namespace TestSandbox.SerializedObjects
         {
             var spaces = DisplayHelper.Spaces(n);
             var sb = new StringBuilder();
+            sb.AppendLine($"{spaces}{nameof(SomeField)} = {SomeField}");
             return sb.ToString();
         }
     }

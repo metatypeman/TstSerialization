@@ -15,7 +15,7 @@ namespace TestSandbox.SerializedObjects
 
         private EngineContext _engineContext;
 
-        private SecondComponentData _data;
+        public SecondComponentData _data;
 
         void ISerializable<SecondComponentPo>.OnWritePlainObject(SecondComponentPo plainObject, ISerializer serializer)
         {

@@ -5,6 +5,8 @@ namespace TestSandbox.SerializedObjects.PlainObjects
 {
     public class FirstComponentDataPo: IObjectToString
     {
+        public int Field1 { get; set; }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -22,6 +24,7 @@ namespace TestSandbox.SerializedObjects.PlainObjects
         {
             var spaces = DisplayHelper.Spaces(n);
             var sb = new StringBuilder();
+            sb.AppendLine($"{spaces}{nameof(Field1)} = {Field1}");
             return sb.ToString();
         }
     }

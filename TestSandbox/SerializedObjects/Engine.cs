@@ -19,7 +19,7 @@ namespace TestSandbox.SerializedObjects
             _engineContext.SecondComponent = new SecondComponent(_engineContext);
         }
 
-        private EngineContext _engineContext;
+        public EngineContext _engineContext;
 
         void ISerializable<EnginePo>.OnWritePlainObject(EnginePo plainObject, ISerializer serializer)
         {
