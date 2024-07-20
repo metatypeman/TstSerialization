@@ -1,6 +1,7 @@
 ﻿using NLog;
 using TestSandbox.Serialization;
 using TestSandbox.SerializedObjects;
+using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox
 {
@@ -12,8 +13,22 @@ namespace TestSandbox
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            Case2();
+            Case3();
+            //Case2();
             //Case1();
+        }
+
+        private static void Case3()
+        {
+            _logger.Info("Begin");
+
+            var serializer = new Serializer();
+
+            var engine = serializer.Deserialize<Engine, EnginePo>();
+
+            _logger.Info($"engine = {engine}");
+
+            _logger.Info("End");
         }
 
         private static void Case2()
