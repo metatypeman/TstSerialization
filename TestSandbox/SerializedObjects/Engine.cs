@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using TestSandbox.Helpers;
+using TestSandbox.Serialization;
+using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class Engine : IObjectToString
+    public class Engine : IObjectToString, ISerializable<EnginePo>
     {
         public Engine()
         {
@@ -18,6 +20,11 @@ namespace TestSandbox.SerializedObjects
         }
 
         private EngineContext _engineContext;
+
+        void ISerializable<EnginePo>.OnWritePlainObject(EnginePo plainObject, ISerializer serializer)
+        {
+            plainObject.EngineContext = serializer.GetSerializedObjectPtr(_engineContext);
+        }
 
         /// <inheritdoc/>
         public override string ToString()

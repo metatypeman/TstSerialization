@@ -1,15 +1,12 @@
 ﻿using System.Text;
 using TestSandbox.Helpers;
 using TestSandbox.Serialization;
-using TestSandbox.SerializedObjects.PlainObjects;
 
-namespace TestSandbox.SerializedObjects
+namespace TestSandbox.SerializedObjects.PlainObjects
 {
-    public class FirstComponentData: IObjectToString, ISerializable<FirstComponentDataPo>
+    public class FirstComponentPo : IObjectToString
     {
-        void ISerializable<FirstComponentDataPo>.OnWritePlainObject(FirstComponentDataPo plainObject, ISerializer serializer)
-        {
-        }
+        public ObjectPtr Data { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()
@@ -28,6 +25,7 @@ namespace TestSandbox.SerializedObjects
         {
             var spaces = DisplayHelper.Spaces(n);
             var sb = new StringBuilder();
+            sb.AppendLine($"{spaces}{nameof(Data)} = {Data}");
             return sb.ToString();
         }
     }

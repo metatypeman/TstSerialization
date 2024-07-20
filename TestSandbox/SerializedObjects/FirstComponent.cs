@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using TestSandbox.Helpers;
+using TestSandbox.Serialization;
+using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class FirstComponent : IObjectToString
+    public class FirstComponent : IObjectToString, ISerializable<FirstComponentPo>
     {
         public FirstComponent(EngineContext engineContext)
         {
@@ -13,6 +15,11 @@ namespace TestSandbox.SerializedObjects
 
         private EngineContext _engineContext;
         private FirstComponentData _data;
+
+        void ISerializable<FirstComponentPo>.OnWritePlainObject(FirstComponentPo plainObject, ISerializer serializer)
+        {
+            plainObject.Data = serializer.GetSerializedObjectPtr(_data);
+        }
 
         /// <inheritdoc/>
         public override string ToString()

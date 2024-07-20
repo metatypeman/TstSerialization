@@ -1,10 +1,16 @@
 ﻿using System.Text;
 using TestSandbox.Helpers;
+using TestSandbox.Serialization;
+using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class SecondComponentData : IObjectToString
+    public class SecondComponentData : IObjectToString, ISerializable<SecondComponentDataPo>
     {
+        void ISerializable<SecondComponentDataPo>.OnWritePlainObject(SecondComponentDataPo plainObject, ISerializer serializer)
+        {
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
