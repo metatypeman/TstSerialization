@@ -33,14 +33,14 @@ namespace TestSandbox.SerializedObjects
             plainObject.EngineContext = serializer.GetSerializedObjectPtr(_engineContext);
         }
 
-        void ISerializable.OnReadPlainObject(object plainObject, ISerializer serializer)
+        void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
         {
-            OnReadPlainObject((EnginePo)plainObject, serializer);
+            OnReadPlainObject((EnginePo)plainObject, deserializer);
         }
 
-        private void OnReadPlainObject(EnginePo plainObject, ISerializer serializer)
+        private void OnReadPlainObject(EnginePo plainObject, IDeserializer deserializer)
         {
-            _engineContext = serializer.GetDeserializedObject<EngineContext>(plainObject.EngineContext);
+            _engineContext = deserializer.GetDeserializedObject<EngineContext>(plainObject.EngineContext);
         }
 
         /// <inheritdoc/>

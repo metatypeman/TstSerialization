@@ -7,24 +7,21 @@ namespace TestSandbox.Serialization
     {
         private static ILogger _logger = LogManager.GetCurrentClassLogger();
 
-        public Serializer()
+        public Serializer(ISerializationContext serializationContext)
         {
+            _serializationContext = serializationContext;
         }
 
-        private string _dirName;
+        private readonly ISerializationContext _serializationContext;
 
-        private Dictionary<object, ObjectPtr> _serializedObjects = new Dictionary<object, ObjectPtr>();
-        private Dictionary<string, object> _deserializedObject = new Dictionary<string, object>();
-
+        /// <inheritdoc/>
         public void Serialize(ISerializable serializable)
         {
-            _dirName = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString("D"));
-
-            Directory.CreateDirectory(_dirName);
-
+#if DEBUG
             _logger.Info($"serializable = {serializable}");
+#endif
 
-            if(_serializedObjects.ContainsKey(serializable))
+            if(_serializationContext.IsSerialized(serializable))
             {
                 return;
             }
@@ -32,24 +29,31 @@ namespace TestSandbox.Serialization
             var rootObject = new RootObject();
             rootObject.Data = NSerialize(serializable);
 
+#if DEBUG
             _logger.Info($"rootObject = {rootObject}");
+#endif
 
             var fileName = $"root.json";
 
-            var fullFileName = Path.Combine(_dirName, fileName);
+            var fullFileName = Path.Combine(_serializationContext.DirName, fileName);
 
+#if DEBUG
             _logger.Info($"fullFileName = {fullFileName}");
+#endif
 
             File.WriteAllText(fullFileName, JsonConvert.SerializeObject(rootObject));
         }
 
+        /// <inheritdoc/>
         public ObjectPtr GetSerializedObjectPtr(ISerializable serializable)
         {
+#if DEBUG
             _logger.Info($"serializable = {serializable}");
+#endif
 
-            if (_serializedObjects.ContainsKey(serializable))
+            if (_serializationContext.TryGetObjectPtr(serializable, out var objectPtr))
             {
-                return _serializedObjects[serializable];
+                return objectPtr;
             }
 
             return NSerialize(serializable);
@@ -59,98 +63,37 @@ namespace TestSandbox.Serialization
         {
             var instanceId = Guid.NewGuid().ToString("D");
 
+#if DEBUG
             _logger.Info($"instanceId = {instanceId}");
+#endif
 
             var objectPtr = new ObjectPtr(instanceId, serializable.GetType().FullName);
 
+#if DEBUG
             _logger.Info($"objectPtr = {objectPtr}");
+#endif
 
-            _serializedObjects[serializable] = objectPtr;
+            _serializationContext.RegObjectPtr(serializable, objectPtr);
 
             var plainObject = Activator.CreateInstance(serializable.GetPlainObjectType());
 
             serializable.OnWritePlainObject(plainObject, this);
 
+#if DEBUG
             _logger.Info($"plainObject = {plainObject}");
+#endif
 
             var fileName = $"{instanceId}.json";
 
-            var fullFileName = Path.Combine(_dirName, fileName);
+            var fullFileName = Path.Combine(_serializationContext.DirName, fileName);
 
+#if DEBUG
             _logger.Info($"fullFileName = {fullFileName}");
+#endif
 
             File.WriteAllText(fullFileName, JsonConvert.SerializeObject(plainObject));
 
-            _serializedObjects[serializable] = objectPtr;
-
             return objectPtr;
-        }
-
-        public T Deserialize<T>()
-            where T : ISerializable, new()
-        {
-            _dirName = @"d:\Repos\TstSerialization\TestSandbox\bin\Debug\net8.0\2c33fe67-1edf-48ab-ad78-17b3ed577be3\";
-
-            _logger.Info($"_dirName = {_dirName}");
-
-            var rootFileFullName = Path.Combine(_dirName, "root.json");
-
-            _logger.Info($"rootFileFullName = {rootFileFullName}");
-
-            var rootObject = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText(rootFileFullName));
-
-            _logger.Info($"rootObject = {rootObject}");
-
-            return NDeserialize<T>(rootObject.Data);
-        }
-
-        public T GetDeserializedObject<T>(ObjectPtr objectPtr)
-            where T : ISerializable, new()
-        {
-            _logger.Info($"objectPtr = {objectPtr}");
-
-            var instanceId = objectPtr.Id;
-
-            if(_deserializedObject.ContainsKey(instanceId))
-            {
-                return (T)_deserializedObject[instanceId];
-            }
-
-            return NDeserialize<T>(objectPtr);
-        }
-
-        private T NDeserialize<T>(ObjectPtr objectPtr)
-            where T : ISerializable, new()
-        {
-            _logger.Info($"objectPtr = {objectPtr}");
-
-            var fileName = $"{objectPtr.Id}.json";
-
-            var fullFileName = Path.Combine(_dirName, fileName);
-
-            _logger.Info($"fullFileName = {fullFileName}");
-
-            var type = Type.GetType(objectPtr.TypeName);
-
-            _logger.Info($"type.FullName = {type.FullName}");
-
-            var obj = Activator.CreateInstance(type);
-
-            _logger.Info($"obj = {obj}");
-
-            var serializable = (ISerializable)obj;
-
-            var plainObject = JsonConvert.DeserializeObject(File.ReadAllText(fullFileName), serializable.GetPlainObjectType());
-
-            _logger.Info($"plainObject = {plainObject}");
-
-            serializable.OnReadPlainObject(plainObject, this);
-
-            _logger.Info($"serializable = {serializable}");
-
-            _deserializedObject[objectPtr.Id] = obj;
-
-            return (T)obj;
         }
     }
 }

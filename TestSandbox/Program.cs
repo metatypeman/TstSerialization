@@ -21,9 +21,9 @@ namespace TestSandbox
         {
             _logger.Info("Begin");
 
-            var serializer = new Serializer();
+            var deserializer = new Deserializer();
 
-            var engine = serializer.Deserialize<Engine>();
+            var engine = deserializer.Deserialize<Engine>();
 
             _logger.Info($"engine = {engine}");
 
@@ -40,7 +40,9 @@ namespace TestSandbox
 
             _logger.Info($"engine = {engine}");
 
-            var serializer = new Serializer();
+            var serializationContext = new SerializationContext();
+
+            var serializer = new Serializer(serializationContext);
 
             serializer.Serialize(engine);
 

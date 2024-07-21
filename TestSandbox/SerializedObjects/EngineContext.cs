@@ -23,15 +23,15 @@ namespace TestSandbox.SerializedObjects
             plainObject.SecondComponent = serializer.GetSerializedObjectPtr(SecondComponent);
         }
 
-        void ISerializable.OnReadPlainObject(object plainObject, ISerializer serializer)
+        void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
         {
-            OnReadPlainObject((EngineContextPo)plainObject, serializer);
+            OnReadPlainObject((EngineContextPo)plainObject, deserializer);
         }
 
-        void OnReadPlainObject(EngineContextPo plainObject, ISerializer serializer)
+        void OnReadPlainObject(EngineContextPo plainObject, IDeserializer deserializer)
         {
-            FirstComponent = serializer.GetDeserializedObject<FirstComponent>(plainObject.FirstComponent);
-            SecondComponent = serializer.GetDeserializedObject<SecondComponent>(plainObject.SecondComponent);
+            FirstComponent = deserializer.GetDeserializedObject<FirstComponent>(plainObject.FirstComponent);
+            SecondComponent = deserializer.GetDeserializedObject<SecondComponent>(plainObject.SecondComponent);
         }
 
         /// <inheritdoc/>

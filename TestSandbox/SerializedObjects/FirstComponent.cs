@@ -32,14 +32,14 @@ namespace TestSandbox.SerializedObjects
             plainObject.Data = serializer.GetSerializedObjectPtr(_data);
         }
 
-        void ISerializable.OnReadPlainObject(object plainObject, ISerializer serializer)
+        void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
         {
-            OnReadPlainObject((FirstComponentPo)plainObject, serializer);
+            OnReadPlainObject((FirstComponentPo)plainObject, deserializer);
         }
 
-        void OnReadPlainObject(FirstComponentPo plainObject, ISerializer serializer)
+        void OnReadPlainObject(FirstComponentPo plainObject, IDeserializer deserializer)
         {
-            _data = serializer.GetDeserializedObject<FirstComponentData>(plainObject.Data);
+            _data = deserializer.GetDeserializedObject<FirstComponentData>(plainObject.Data);
         }
 
         /// <inheritdoc/>

@@ -21,12 +21,12 @@ namespace TestSandbox.SerializedObjects
             plainObject.SomeField = SomeField;
         }
 
-        void ISerializable.OnReadPlainObject(object plainObject, ISerializer serializer)
+        void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
         {
-            OnReadPlainObject((SecondComponentDataPo)plainObject, serializer);
+            OnReadPlainObject((SecondComponentDataPo)plainObject, deserializer);
         }
 
-        void OnReadPlainObject(SecondComponentDataPo plainObject, ISerializer serializer)
+        void OnReadPlainObject(SecondComponentDataPo plainObject, IDeserializer deserializer)
         {
             SomeField = plainObject.SomeField;
         }

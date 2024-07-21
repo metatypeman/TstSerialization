@@ -6,6 +6,6 @@ namespace TestSandbox.Serialization
     {
         Type GetPlainObjectType();
         void OnWritePlainObject(object plainObject, ISerializer serializer);
-        void OnReadPlainObject(object plainObject, ISerializer serializer);
+        void OnReadPlainObject(object plainObject, IDeserializer deserializer);
     }
 }
