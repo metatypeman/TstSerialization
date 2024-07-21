@@ -7,24 +7,18 @@ namespace TestSandbox.Serialization
     {
         private static ILogger _logger = LogManager.GetCurrentClassLogger();
 
-        public Deserializer()
+        public Deserializer(IDeserializationContext deserializationContext)
         {
+            _deserializationContext = deserializationContext;
         }
 
-        private string _dirName;
-        private Dictionary<string, object> _deserializedObject = new Dictionary<string, object>();
+        private readonly IDeserializationContext _deserializationContext;
 
         /// <inheritdoc/>
         public T Deserialize<T>()
             where T : ISerializable, new()
         {
-            _dirName = @"d:\Repos\TstSerialization\TestSandbox\bin\Debug\net8.0\2c33fe67-1edf-48ab-ad78-17b3ed577be3\";
-
-#if DEBUG
-            _logger.Info($"_dirName = {_dirName}");
-#endif
-
-            var rootFileFullName = Path.Combine(_dirName, "root.json");
+            var rootFileFullName = Path.Combine(_deserializationContext.DirName, "root.json");
 
 #if DEBUG
             _logger.Info($"rootFileFullName = {rootFileFullName}");
@@ -49,9 +43,9 @@ namespace TestSandbox.Serialization
 
             var instanceId = objectPtr.Id;
 
-            if (_deserializedObject.ContainsKey(instanceId))
+            if (_deserializationContext.TryGetDeserializedObject(instanceId, out var instance))
             {
-                return (T)_deserializedObject[instanceId];
+                return (T)instance;
             }
 
             return NDeserialize<T>(objectPtr);
@@ -66,7 +60,7 @@ namespace TestSandbox.Serialization
 
             var fileName = $"{objectPtr.Id}.json";
 
-            var fullFileName = Path.Combine(_dirName, fileName);
+            var fullFileName = Path.Combine(_deserializationContext.DirName, fileName);
 
 #if DEBUG
             _logger.Info($"fullFileName = {fullFileName}");
@@ -78,13 +72,13 @@ namespace TestSandbox.Serialization
             _logger.Info($"type.FullName = {type.FullName}");
 #endif
 
-            var obj = Activator.CreateInstance(type);
+            var instance = Activator.CreateInstance(type);
 
 #if DEBUG
-            _logger.Info($"obj = {obj}");
+            _logger.Info($"instance = {instance}");
 #endif
 
-            var serializable = (ISerializable)obj;
+            var serializable = (ISerializable)instance;
 
             var plainObject = JsonConvert.DeserializeObject(File.ReadAllText(fullFileName), serializable.GetPlainObjectType());
 
@@ -98,9 +92,9 @@ namespace TestSandbox.Serialization
             _logger.Info($"serializable = {serializable}");
 #endif
 
-            _deserializedObject[objectPtr.Id] = obj;
+            _deserializationContext.RegDeserializedObject(objectPtr.Id, instance);
 
-            return (T)obj;
+            return (T)instance;
         }
     }
 }

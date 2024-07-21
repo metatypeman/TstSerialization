@@ -21,7 +21,9 @@ namespace TestSandbox
         {
             _logger.Info("Begin");
 
-            var deserializer = new Deserializer();
+            var deserializationContext = new DeserializationContext();
+
+            var deserializer = new Deserializer(deserializationContext);
 
             var engine = deserializer.Deserialize<Engine>();
 
