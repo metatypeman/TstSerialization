@@ -5,7 +5,7 @@ using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class FirstComponent : IObjectToString, ISerializable<FirstComponentPo>
+    public class FirstComponent : IObjectToString, ISerializable
     {
         public FirstComponent()
         {
@@ -20,14 +20,26 @@ namespace TestSandbox.SerializedObjects
         private EngineContext _engineContext;
         public FirstComponentData _data;
 
-        void ISerializable<FirstComponentPo>.OnWritePlainObject(FirstComponentPo plainObject, ISerializer serializer)
+        Type ISerializable.GetPlainObjectType() => typeof(FirstComponentPo);
+
+        void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
+        {
+            OnWritePlainObject((FirstComponentPo)plainObject, serializer);
+        }
+
+        void OnWritePlainObject(FirstComponentPo plainObject, ISerializer serializer)
         {
             plainObject.Data = serializer.GetSerializedObjectPtr(_data);
         }
 
-        void ISerializable<FirstComponentPo>.OnReadPlainObject(FirstComponentPo plainObject, ISerializer serializer)
+        void ISerializable.OnReadPlainObject(object plainObject, ISerializer serializer)
         {
-            _data = serializer.GetDeserializedObject<FirstComponentData, FirstComponentDataPo>(plainObject.Data);
+            OnReadPlainObject((FirstComponentPo)plainObject, serializer);
+        }
+
+        void OnReadPlainObject(FirstComponentPo plainObject, ISerializer serializer)
+        {
+            _data = serializer.GetDeserializedObject<FirstComponentData>(plainObject.Data);
         }
 
         /// <inheritdoc/>

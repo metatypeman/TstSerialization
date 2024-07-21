@@ -5,7 +5,7 @@ using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class Engine : IObjectToString, ISerializable<EnginePo>
+    public class Engine : IObjectToString, ISerializable
     {
         public Engine()
         {
@@ -21,14 +21,26 @@ namespace TestSandbox.SerializedObjects
 
         public EngineContext _engineContext;
 
-        void ISerializable<EnginePo>.OnWritePlainObject(EnginePo plainObject, ISerializer serializer)
+        Type ISerializable.GetPlainObjectType() => typeof(EnginePo);
+
+        void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
+        {
+            OnWritePlainObject((EnginePo)plainObject, serializer);
+        }
+
+        private void OnWritePlainObject(EnginePo plainObject, ISerializer serializer)
         {
             plainObject.EngineContext = serializer.GetSerializedObjectPtr(_engineContext);
         }
 
-        void ISerializable<EnginePo>.OnReadPlainObject(EnginePo plainObject, ISerializer serializer)
+        void ISerializable.OnReadPlainObject(object plainObject, ISerializer serializer)
         {
-            _engineContext = serializer.GetDeserializedObject<EngineContext, EngineContextPo>(plainObject.EngineContext);
+            OnReadPlainObject((EnginePo)plainObject, serializer);
+        }
+
+        private void OnReadPlainObject(EnginePo plainObject, ISerializer serializer)
+        {
+            _engineContext = serializer.GetDeserializedObject<EngineContext>(plainObject.EngineContext);
         }
 
         /// <inheritdoc/>

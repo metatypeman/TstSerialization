@@ -2,10 +2,10 @@
 
 namespace TestSandbox.Serialization
 {
-    public interface ISerializable<TPlainObject>: IObjectToString
-        where TPlainObject : class, new()
+    public interface ISerializable: IObjectToString
     {
-        void OnWritePlainObject(TPlainObject plainObject, ISerializer serializer);
-        void OnReadPlainObject(TPlainObject plainObject, ISerializer serializer);
+        Type GetPlainObjectType();
+        void OnWritePlainObject(object plainObject, ISerializer serializer);
+        void OnReadPlainObject(object plainObject, ISerializer serializer);
     }
 }

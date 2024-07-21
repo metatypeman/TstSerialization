@@ -16,8 +16,7 @@ namespace TestSandbox.Serialization
         private Dictionary<object, ObjectPtr> _serializedObjects = new Dictionary<object, ObjectPtr>();
         private Dictionary<string, object> _deserializedObject = new Dictionary<string, object>();
 
-        public void Serialize<TPlainObject>(ISerializable<TPlainObject> serializable)
-            where TPlainObject : class, new()
+        public void Serialize(ISerializable serializable)
         {
             _dirName = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString("D"));
 
@@ -44,8 +43,7 @@ namespace TestSandbox.Serialization
             File.WriteAllText(fullFileName, JsonConvert.SerializeObject(rootObject));
         }
 
-        public ObjectPtr GetSerializedObjectPtr<TPlainObject>(ISerializable<TPlainObject> serializable)
-            where TPlainObject : class, new()
+        public ObjectPtr GetSerializedObjectPtr(ISerializable serializable)
         {
             _logger.Info($"serializable = {serializable}");
 
@@ -57,8 +55,7 @@ namespace TestSandbox.Serialization
             return NSerialize(serializable);
         }
 
-        private ObjectPtr NSerialize<TPlainObject>(ISerializable<TPlainObject> serializable)
-            where TPlainObject : class, new ()
+        private ObjectPtr NSerialize(ISerializable serializable)
         {
             var instanceId = Guid.NewGuid().ToString("D");
 
@@ -70,7 +67,7 @@ namespace TestSandbox.Serialization
 
             _serializedObjects[serializable] = objectPtr;
 
-            var plainObject = new TPlainObject();
+            var plainObject = Activator.CreateInstance(serializable.GetPlainObjectType());
 
             serializable.OnWritePlainObject(plainObject, this);
 
@@ -89,9 +86,8 @@ namespace TestSandbox.Serialization
             return objectPtr;
         }
 
-        public T Deserialize<T, TPlainObject>()
-            where T : ISerializable<TPlainObject>, new()
-            where TPlainObject : class, new()
+        public T Deserialize<T>()
+            where T : ISerializable, new()
         {
             _dirName = @"d:\Repos\TstSerialization\TestSandbox\bin\Debug\net8.0\2c33fe67-1edf-48ab-ad78-17b3ed577be3\";
 
@@ -105,12 +101,11 @@ namespace TestSandbox.Serialization
 
             _logger.Info($"rootObject = {rootObject}");
 
-            return NDeserialize<T, TPlainObject>(rootObject.Data);
+            return NDeserialize<T>(rootObject.Data);
         }
 
-        public T GetDeserializedObject<T, TPlainObject>(ObjectPtr objectPtr)
-            where T : ISerializable<TPlainObject>, new()
-            where TPlainObject : class, new()
+        public T GetDeserializedObject<T>(ObjectPtr objectPtr)
+            where T : ISerializable, new()
         {
             _logger.Info($"objectPtr = {objectPtr}");
 
@@ -121,12 +116,11 @@ namespace TestSandbox.Serialization
                 return (T)_deserializedObject[instanceId];
             }
 
-            return NDeserialize<T, TPlainObject>(objectPtr);
+            return NDeserialize<T>(objectPtr);
         }
 
-        private T NDeserialize<T, TPlainObject>(ObjectPtr objectPtr)
-            where T : ISerializable<TPlainObject>, new()
-            where TPlainObject : class, new()
+        private T NDeserialize<T>(ObjectPtr objectPtr)
+            where T : ISerializable, new()
         {
             _logger.Info($"objectPtr = {objectPtr}");
 
@@ -136,10 +130,6 @@ namespace TestSandbox.Serialization
 
             _logger.Info($"fullFileName = {fullFileName}");
 
-            var plainObject = JsonConvert.DeserializeObject<TPlainObject>(File.ReadAllText(fullFileName));
-
-            _logger.Info($"plainObject = {plainObject}");
-
             var type = Type.GetType(objectPtr.TypeName);
 
             _logger.Info($"type.FullName = {type.FullName}");
@@ -148,7 +138,11 @@ namespace TestSandbox.Serialization
 
             _logger.Info($"obj = {obj}");
 
-            var serializable = (ISerializable<TPlainObject>)obj;
+            var serializable = (ISerializable)obj;
+
+            var plainObject = JsonConvert.DeserializeObject(File.ReadAllText(fullFileName), serializable.GetPlainObjectType());
+
+            _logger.Info($"plainObject = {plainObject}");
 
             serializable.OnReadPlainObject(plainObject, this);
 

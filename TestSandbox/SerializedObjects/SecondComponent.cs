@@ -5,7 +5,7 @@ using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class SecondComponent: IObjectToString, ISerializable<SecondComponentPo>
+    public class SecondComponent: IObjectToString, ISerializable
     {
         public SecondComponent()
         {
@@ -21,14 +21,26 @@ namespace TestSandbox.SerializedObjects
 
         public SecondComponentData _data;
 
-        void ISerializable<SecondComponentPo>.OnWritePlainObject(SecondComponentPo plainObject, ISerializer serializer)
+        Type ISerializable.GetPlainObjectType() => typeof(SecondComponentPo);
+
+        void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
+        {
+            OnWritePlainObject((SecondComponentPo)plainObject, serializer);
+        }
+        
+        void OnWritePlainObject(SecondComponentPo plainObject, ISerializer serializer)
         {
             plainObject.Data = serializer.GetSerializedObjectPtr(_data);
         }
 
-        void ISerializable<SecondComponentPo>.OnReadPlainObject(SecondComponentPo plainObject, ISerializer serializer)
+        void ISerializable.OnReadPlainObject(object plainObject, ISerializer serializer)
         {
-            _data = serializer.GetDeserializedObject<SecondComponentData, SecondComponentDataPo>(plainObject.Data);
+            OnReadPlainObject((SecondComponentPo)plainObject, serializer);
+        }
+
+        void OnReadPlainObject(SecondComponentPo plainObject, ISerializer serializer)
+        {
+            _data = serializer.GetDeserializedObject<SecondComponentData>(plainObject.Data);
         }
 
         /// <inheritdoc/>

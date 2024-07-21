@@ -1,7 +1,6 @@
 ﻿using NLog;
 using TestSandbox.Serialization;
 using TestSandbox.SerializedObjects;
-using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox
 {
@@ -24,7 +23,7 @@ namespace TestSandbox
 
             var serializer = new Serializer();
 
-            var engine = serializer.Deserialize<Engine, EnginePo>();
+            var engine = serializer.Deserialize<Engine>();
 
             _logger.Info($"engine = {engine}");
 

@@ -5,16 +5,28 @@ using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class FirstComponentData: IObjectToString, ISerializable<FirstComponentDataPo>
+    public class FirstComponentData: IObjectToString, ISerializable
     {
         public int Field1 { get; set; }
 
-        void ISerializable<FirstComponentDataPo>.OnWritePlainObject(FirstComponentDataPo plainObject, ISerializer serializer)
+        Type ISerializable.GetPlainObjectType() => typeof(FirstComponentDataPo);
+
+        void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
+        {
+            OnWritePlainObject((FirstComponentDataPo)plainObject, serializer);
+        }
+
+        void OnWritePlainObject(FirstComponentDataPo plainObject, ISerializer serializer)
         {
             plainObject.Field1 = Field1;
         }
 
-        void ISerializable<FirstComponentDataPo>.OnReadPlainObject(FirstComponentDataPo plainObject, ISerializer serializer)
+        void ISerializable.OnReadPlainObject(object plainObject, ISerializer serializer)
+        {
+            OnReadPlainObject((FirstComponentDataPo)plainObject, serializer);
+        }
+
+        void OnReadPlainObject(FirstComponentDataPo plainObject, ISerializer serializer)
         {
             Field1 = plainObject.Field1;
         }

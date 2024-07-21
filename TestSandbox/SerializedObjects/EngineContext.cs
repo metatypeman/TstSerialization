@@ -5,21 +5,33 @@ using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class EngineContext : IObjectToString, ISerializable<EngineContextPo>
+    public class EngineContext : IObjectToString, ISerializable
     {
         public FirstComponent FirstComponent { get; set; }
         public SecondComponent SecondComponent { get; set; }
 
-        void ISerializable<EngineContextPo>.OnWritePlainObject(EngineContextPo plainObject, ISerializer serializer)
+        Type ISerializable.GetPlainObjectType() => typeof(EngineContextPo);
+
+        void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
+        {
+            OnWritePlainObject((EngineContextPo)plainObject, serializer);
+        }
+
+        void OnWritePlainObject(EngineContextPo plainObject, ISerializer serializer)
         {
             plainObject.FirstComponent = serializer.GetSerializedObjectPtr(FirstComponent);
             plainObject.SecondComponent = serializer.GetSerializedObjectPtr(SecondComponent);
         }
 
-        void ISerializable<EngineContextPo>.OnReadPlainObject(EngineContextPo plainObject, ISerializer serializer)
+        void ISerializable.OnReadPlainObject(object plainObject, ISerializer serializer)
         {
-            FirstComponent = serializer.GetDeserializedObject<FirstComponent, FirstComponentPo>(plainObject.FirstComponent);
-            SecondComponent = serializer.GetDeserializedObject<SecondComponent, SecondComponentPo>(plainObject.SecondComponent);
+            OnReadPlainObject((EngineContextPo)plainObject, serializer);
+        }
+
+        void OnReadPlainObject(EngineContextPo plainObject, ISerializer serializer)
+        {
+            FirstComponent = serializer.GetDeserializedObject<FirstComponent>(plainObject.FirstComponent);
+            SecondComponent = serializer.GetDeserializedObject<SecondComponent>(plainObject.SecondComponent);
         }
 
         /// <inheritdoc/>
