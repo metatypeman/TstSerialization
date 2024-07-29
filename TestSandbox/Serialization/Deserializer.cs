@@ -16,7 +16,6 @@ namespace TestSandbox.Serialization
 
         /// <inheritdoc/>
         public T Deserialize<T>()
-            where T : ISerializable, new()
         {
             var rootFileFullName = Path.Combine(_deserializationContext.DirName, "root.json");
 
@@ -35,7 +34,6 @@ namespace TestSandbox.Serialization
 
         /// <inheritdoc/>
         public T GetDeserializedObject<T>(ObjectPtr objectPtr)
-            where T : ISerializable, new()
         {
 #if DEBUG
             _logger.Info($"objectPtr = {objectPtr}");
@@ -52,7 +50,6 @@ namespace TestSandbox.Serialization
         }
 
         private T NDeserialize<T>(ObjectPtr objectPtr)
-            where T : ISerializable, new()
         {
 #if DEBUG
             _logger.Info($"objectPtr = {objectPtr}");
