@@ -45,10 +45,10 @@ namespace TestSandbox.Serialization
         }
 
         /// <inheritdoc/>
-        public ObjectPtr GetSerializedObjectPtr(ISerializable serializable)
+        public ObjectPtr GetSerializedObjectPtr(object obj)
         {
 #if DEBUG
-            _logger.Info($"serializable = {serializable}");
+            _logger.Info($"obj = {obj}");
 #endif
 
             if (_serializationContext.TryGetObjectPtr(serializable, out var objectPtr))
@@ -56,7 +56,9 @@ namespace TestSandbox.Serialization
                 return objectPtr;
             }
 
-            return NSerialize(serializable);
+            throw new NotImplementedException();
+
+            //return NSerialize(serializable);
         }
 
         private ObjectPtr NSerialize(ISerializable serializable)

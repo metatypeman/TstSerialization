@@ -3,6 +3,6 @@
     public interface ISerializer
     {
         void Serialize(ISerializable serializable);
-        ObjectPtr GetSerializedObjectPtr(ISerializable serializable);
+        ObjectPtr GetSerializedObjectPtr(object obj);
     }
 }

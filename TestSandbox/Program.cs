@@ -12,8 +12,8 @@ namespace TestSandbox
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            Case3();
-            //Case2();
+            //Case3();
+            Case2();
             //Case1();
         }
 
