@@ -16,21 +16,21 @@
         public string DirName => _dirName;
 
         /// <inheritdoc/>
-        public bool IsSerialized(ISerializable serializable)
+        public bool IsSerialized(object obj)
         {
-            return _serializedObjects.ContainsKey(serializable);
+            return _serializedObjects.ContainsKey(obj);
         }
 
         /// <inheritdoc/>
-        public bool TryGetObjectPtr(ISerializable serializable, out ObjectPtr objectPtr)
+        public bool TryGetObjectPtr(object obj, out ObjectPtr objectPtr)
         {
-            return _serializedObjects.TryGetValue(serializable, out objectPtr);
+            return _serializedObjects.TryGetValue(obj, out objectPtr);
         }
 
         /// <inheritdoc/>
-        public void RegObjectPtr(ISerializable serializable, ObjectPtr objectPtr)
+        public void RegObjectPtr(object obj, ObjectPtr objectPtr)
         {
-            _serializedObjects[serializable] = objectPtr;
+            _serializedObjects[obj] = objectPtr;
         }
     }
 }

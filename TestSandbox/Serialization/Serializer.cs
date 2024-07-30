@@ -51,14 +51,21 @@ namespace TestSandbox.Serialization
             _logger.Info($"obj = {obj}");
 #endif
 
-            if (_serializationContext.TryGetObjectPtr(serializable, out var objectPtr))
+            if (_serializationContext.TryGetObjectPtr(obj, out var objectPtr))
             {
                 return objectPtr;
             }
 
-            throw new NotImplementedException();
+            var serializable = obj as ISerializable;
 
-            //return NSerialize(serializable);
+            if(serializable == null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return NSerialize(serializable);
+            }
         }
 
         private ObjectPtr NSerialize(ISerializable serializable)
