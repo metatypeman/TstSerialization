@@ -13,7 +13,8 @@ namespace TestSandbox
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             //Case3();
-            Case2();
+            Case2_1();
+            //Case2();
             //Case1();
         }
 
@@ -28,6 +29,29 @@ namespace TestSandbox
             var engine = deserializer.Deserialize<Engine>();
 
             _logger.Info($"engine = {engine}");
+
+            _logger.Info("End");
+        }
+
+        private static void Case2_1()
+        {
+            _logger.Info("Begin");
+
+            var objWithCollectionsInProps = new ObjWithCollectionsInProps();
+            objWithCollectionsInProps.ObjListProp =
+            [
+                1,
+                new SecondComponentData() { SomeField = 15},
+                null
+            ];
+
+            _logger.Info($"objWithCollectionsInProps = {objWithCollectionsInProps}");
+
+            var serializationContext = new SerializationContext();
+
+            var serializer = new Serializer(serializationContext);
+
+            serializer.Serialize(objWithCollectionsInProps);
 
             _logger.Info("End");
         }
