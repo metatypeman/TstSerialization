@@ -1,4 +1,6 @@
-﻿using NLog;
+﻿using Newtonsoft.Json;
+using NLog;
+using System.Collections;
 using TestSandbox.Serialization;
 using TestSandbox.SerializedObjects;
 
@@ -12,11 +14,12 @@ namespace TestSandbox
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            Case3_1();
+            //Case3_1();
             //Case3();
             //Case2_1();
             //Case2();
             //Case1();
+            ProcessQueue();
             //CreateGenericType();
         }
 
@@ -101,6 +104,76 @@ namespace TestSandbox
             engine._engineContext.SecondComponent._data.SomeField = 42;
 
             _logger.Info($"engine = {engine}");
+
+            _logger.Info("End");
+        }
+
+        private static void ProcessQueue()
+        {
+            _logger.Info("Begin");
+
+            var queue = new Queue<int>();
+            queue.Enqueue(1);
+            queue.Enqueue(3);
+            queue.Enqueue(5);
+            queue.Enqueue(16);
+
+#if DEBUG
+            _logger.Info($"queue = {JsonConvert.SerializeObject(queue, Formatting.Indented)}");
+#endif
+
+            var enumerable = (IEnumerable)queue;
+
+#if DEBUG
+            var type = enumerable.GetType();
+            _logger.Info($"type.FullName = {type.FullName}");
+            _logger.Info($"type.Name = {type.Name}");
+            _logger.Info($"type.IsGenericType = {type.IsGenericType}");
+#endif
+
+            var genericParameterType = type.GetGenericArguments()[0];
+
+#if DEBUG
+            _logger.Info($"genericParameterType.FullName = {genericParameterType.FullName}");
+            _logger.Info($"genericParameterType.Name = {genericParameterType.Name}");
+            _logger.Info($"genericParameterType.IsGenericType = {genericParameterType.IsGenericType}");
+            _logger.Info($"genericParameterType.IsPrimitive = {genericParameterType.IsPrimitive}");
+#endif
+
+            var genericListType = typeof(List<>).MakeGenericType(genericParameterType);
+
+            _logger.Info($"genericListType.FullName = {genericListType.FullName}");
+
+            var listWithPlainObjects = (IList)Activator.CreateInstance(genericListType);
+
+            _logger.Info($"listWithPlainObjects.GetType() = {listWithPlainObjects.GetType().FullName}");
+
+
+            foreach (var item in enumerable)
+            {
+#if DEBUG
+                _logger.Info($"item = {JsonConvert.SerializeObject(item, Formatting.Indented)}");
+#endif
+
+                listWithPlainObjects.Add(item);
+            }
+
+#if DEBUG
+            _logger.Info($"listWithPlainObjects = {JsonConvert.SerializeObject(listWithPlainObjects, Formatting.Indented)}");
+#endif
+
+            var queue2Obj = Activator.CreateInstance(type, listWithPlainObjects);
+
+
+#if DEBUG
+            _logger.Info($"queue2Obj = {JsonConvert.SerializeObject(queue2Obj, Formatting.Indented)}");
+#endif
+
+            var queue2 = (Queue<int>)queue2Obj;
+
+#if DEBUG
+            _logger.Info($"queue2 = {JsonConvert.SerializeObject(queue2, Formatting.Indented)}");
+#endif
 
             _logger.Info("End");
         }
