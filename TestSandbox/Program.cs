@@ -17,6 +17,7 @@ namespace TestSandbox
             //Case2_1();
             //Case2();
             //Case1();
+            //CreateGenericType();
         }
 
         private static void Case3_1()
@@ -100,6 +101,22 @@ namespace TestSandbox
             engine._engineContext.SecondComponent._data.SomeField = 42;
 
             _logger.Info($"engine = {engine}");
+
+            _logger.Info("End");
+        }
+
+        private static void CreateGenericType()
+        {
+            _logger.Info("Begin");
+
+            var type = typeof(int); // var type = itemType : put this line to fit the method
+            var genericListType = typeof(List<>).MakeGenericType(type);
+
+            _logger.Info($"genericListType.FullName = {genericListType.FullName}");
+
+            var genericList = Activator.CreateInstance(genericListType);
+
+            _logger.Info($"genericList.GetType() = {genericList.GetType().FullName}");
 
             _logger.Info("End");
         }
