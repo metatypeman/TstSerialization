@@ -100,24 +100,6 @@ namespace TestSandbox.Serialization
                     }
                     throw new NotImplementedException();
             }
-
-
-
-//            if(serializable == null)
-//            {
-//                switch(type.Name)
-//                {
-//                    //case "List`1":
-//                    //    return NDeserializeGenericList((IEnumerable)instance);
-
-//                    default:
-//                        throw new NotImplementedException();
-//                }                
-//            }
-//            else
-//            {
-//                return NDeserialize<T>(serializable, objectPtr, fullFileName);
-//            }
         }
 
         private bool IsSerializable(Type type)
