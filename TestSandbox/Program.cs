@@ -12,17 +12,33 @@ namespace TestSandbox
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
+            Case3_1();
             //Case3();
-            Case2_1();
+            //Case2_1();
             //Case2();
             //Case1();
+        }
+
+        private static void Case3_1()
+        {
+            _logger.Info("Begin");
+
+            var deserializationContext = new DeserializationContext(@"D:\Repos\TstSerialization\TestSandbox\bin\Debug\net8.0\ba6c933a-dbe3-4093-8017-919d9dca4be1");
+
+            var deserializer = new Deserializer(deserializationContext);
+
+            var objWithCollectionsInProps = deserializer.Deserialize<ObjWithCollectionsInProps>();
+
+            _logger.Info($"objWithCollectionsInProps = {objWithCollectionsInProps}");
+
+            _logger.Info("End");
         }
 
         private static void Case3()
         {
             _logger.Info("Begin");
 
-            var deserializationContext = new DeserializationContext();
+            var deserializationContext = new DeserializationContext(@"d:\Repos\TstSerialization\TestSandbox\bin\Debug\net8.0\2c33fe67-1edf-48ab-ad78-17b3ed577be3\");
 
             var deserializer = new Deserializer(deserializationContext);
 

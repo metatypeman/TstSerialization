@@ -1,5 +1,8 @@
 ﻿using Newtonsoft.Json;
 using NLog;
+using System.Collections;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace TestSandbox.Serialization
 {
@@ -23,13 +26,13 @@ namespace TestSandbox.Serialization
             _logger.Info($"rootFileFullName = {rootFileFullName}");
 #endif
 
-            var rootObject = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText(rootFileFullName));
+            var rootObject = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText(rootFileFullName), SerializationHelper.JsonSerializerSettings);
 
 #if DEBUG
             _logger.Info($"rootObject = {rootObject}");
 #endif
 
-            return NDeserialize<T>(rootObject.Data);
+            return (T)NDeserialize(rootObject.Data);
         }
 
         /// <inheritdoc/>
@@ -39,17 +42,26 @@ namespace TestSandbox.Serialization
             _logger.Info($"objectPtr = {objectPtr}");
 #endif
 
+            return (T)GetDeserializedObject(objectPtr);
+        }
+
+        private object GetDeserializedObject(ObjectPtr objectPtr)
+        {
+#if DEBUG
+            _logger.Info($"objectPtr = {objectPtr}");
+#endif
+
             var instanceId = objectPtr.Id;
 
             if (_deserializationContext.TryGetDeserializedObject(instanceId, out var instance))
             {
-                return (T)instance;
+                return instance;
             }
 
-            return NDeserialize<T>(objectPtr);
+            return NDeserialize(objectPtr);
         }
 
-        private T NDeserialize<T>(ObjectPtr objectPtr)
+        private object NDeserialize(ObjectPtr objectPtr)
         {
 #if DEBUG
             _logger.Info($"objectPtr = {objectPtr}");
@@ -69,6 +81,137 @@ namespace TestSandbox.Serialization
             _logger.Info($"type.FullName = {type.FullName}");
 #endif
 
+            switch(type.Name)
+            {
+                case "List`1":
+                    return NDeserializeGenericList(type, objectPtr, fullFileName);
+
+                default:
+                    {
+                        if(IsSerializable(type))
+                        {
+                            return NDeserializeISerializable(type, objectPtr, fullFileName);
+                        }
+                    }
+                    throw new NotImplementedException();
+            }
+
+
+
+//            if(serializable == null)
+//            {
+//                switch(type.Name)
+//                {
+//                    //case "List`1":
+//                    //    return NDeserializeGenericList((IEnumerable)instance);
+
+//                    default:
+//                        throw new NotImplementedException();
+//                }                
+//            }
+//            else
+//            {
+//                return NDeserialize<T>(serializable, objectPtr, fullFileName);
+//            }
+        }
+
+        private bool IsSerializable(Type type)
+        {
+#if DEBUG
+            _logger.Info($"type.GetInterfaces() = {JsonConvert.SerializeObject(type.GetInterfaces().Select(p => p.FullName), Formatting.Indented)}");
+#endif
+
+            return type.GetInterfaces().Any(p => p == typeof(ISerializable));
+        }
+
+        private object NDeserializeGenericList(Type type, ObjectPtr objectPtr, string fullFileName)
+        {
+            var genericParameterType = type.GetGenericArguments()[0];
+
+#if DEBUG
+            _logger.Info($"genericParameterType.FullName = {genericParameterType.FullName}");
+            _logger.Info($"genericParameterType.Name = {genericParameterType.Name}");
+            _logger.Info($"genericParameterType.IsGenericType = {genericParameterType.IsGenericType}");
+            _logger.Info($"genericParameterType.IsPrimitive = {genericParameterType.IsPrimitive}");
+#endif
+
+            if (SerializationHelper.IsObject(genericParameterType))
+            {
+                return NDeserializeListWithObjectParameter(type, objectPtr, fullFileName);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private object NDeserializeListWithObjectParameter(Type type, ObjectPtr objectPtr, string fullFileName)
+        {
+            var instance = Activator.CreateInstance(type);
+
+#if DEBUG
+            _logger.Info($"instance = {instance}");
+#endif
+
+            var list = (List<object>)instance;
+
+            var listWithPlainObjects = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(fullFileName), SerializationHelper.JsonSerializerSettings);
+
+            foreach (var plainObjectItem in listWithPlainObjects)
+            {
+#if DEBUG
+                _logger.Info($"plainObjectItem = {JsonConvert.SerializeObject(plainObjectItem, Formatting.Indented)}");
+#endif
+
+                if (SerializationHelper.IsPrimitiveType(plainObjectItem))
+                {
+                    list.Add(plainObjectItem);
+
+                    continue;
+                }
+
+                var itemType = plainObjectItem.GetType();
+
+#if DEBUG
+                _logger.Info($"itemType.FullName = {itemType.FullName}");
+                _logger.Info($"itemType.Name = {itemType.Name}");
+                _logger.Info($"itemType.IsGenericType = {itemType.IsGenericType}");
+#endif
+
+                if(SerializationHelper.IsObjectPtr(itemType))
+                {
+                    list.Add(GetDeserializedObject((ObjectPtr)plainObjectItem));
+
+                    continue;
+                }
+
+                throw new NotImplementedException();
+
+                //if (IsSerializable(type))
+                //{
+                //    return NDeserializeISerializable<T>(, objectPtr, fullFileName);
+                //}
+
+                //var serializable = plainObjectItem as ISerializable;
+
+                //if (serializable == null)
+                //{
+
+                //    throw new NotImplementedException();
+                //}
+                //else
+                //{
+                //    list.Add(NDeserializeISerializable<T>(serializable));
+                //}
+            }
+
+#if DEBUG
+            _logger.Info($"list = {JsonConvert.SerializeObject(list, Formatting.Indented)}");
+#endif
+
+            return list;
+        }
+
+        private object NDeserializeISerializable(Type type, ObjectPtr objectPtr, string fullFileName)
+        {
             var instance = Activator.CreateInstance(type);
 
 #if DEBUG
@@ -77,7 +220,7 @@ namespace TestSandbox.Serialization
 
             var serializable = (ISerializable)instance;
 
-            var plainObject = JsonConvert.DeserializeObject(File.ReadAllText(fullFileName), serializable.GetPlainObjectType());
+            var plainObject = JsonConvert.DeserializeObject(File.ReadAllText(fullFileName), serializable.GetPlainObjectType(), SerializationHelper.JsonSerializerSettings);
 
 #if DEBUG
             _logger.Info($"plainObject = {plainObject}");
@@ -89,9 +232,9 @@ namespace TestSandbox.Serialization
             _logger.Info($"serializable = {serializable}");
 #endif
 
-            _deserializationContext.RegDeserializedObject(objectPtr.Id, instance);
+            _deserializationContext.RegDeserializedObject(objectPtr.Id, serializable);
 
-            return (T)instance;
+            return serializable;
         }
     }
 }

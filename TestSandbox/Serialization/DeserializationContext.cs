@@ -6,9 +6,9 @@ namespace TestSandbox.Serialization
     {
         private static ILogger _logger = LogManager.GetCurrentClassLogger();
 
-        public DeserializationContext() 
+        public DeserializationContext(string dirName) 
         {
-            _dirName = @"d:\Repos\TstSerialization\TestSandbox\bin\Debug\net8.0\2c33fe67-1edf-48ab-ad78-17b3ed577be3\";
+            _dirName = dirName;
 
 #if DEBUG
             _logger.Info($"_dirName = {_dirName}");

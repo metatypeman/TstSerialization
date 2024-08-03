@@ -1,20 +1,15 @@
 ﻿using Newtonsoft.Json;
 using NLog;
 using System.Collections;
+using System.Runtime.Serialization;
 
 namespace TestSandbox.Serialization
 {
     public class Serializer : ISerializer
     {
+#if DEBUG
         private static ILogger _logger = LogManager.GetCurrentClassLogger();
-
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings()
-        {
-            PreserveReferencesHandling = PreserveReferencesHandling.All,
-            StringEscapeHandling = StringEscapeHandling.EscapeHtml,
-            TypeNameHandling = TypeNameHandling.All
-        };
-
+#endif
         public Serializer(ISerializationContext serializationContext)
         {
             _serializationContext = serializationContext;
@@ -81,12 +76,14 @@ namespace TestSandbox.Serialization
                 _logger.Info($"type.IsGenericType = {type.IsGenericType}");
 #endif
 
-                if(type.Name == "List`1")
+                switch(type.Name)
                 {
-                    return NSerializeGenericList((IEnumerable)obj);
-                }
+                    case "List`1":
+                        return NSerializeGenericList((IEnumerable)obj);
 
-                throw new NotImplementedException();
+                    default:
+                        throw new NotImplementedException();
+                }
             }
             else
             {
@@ -113,7 +110,7 @@ namespace TestSandbox.Serialization
             _logger.Info($"genericParameterType.IsPrimitive = {genericParameterType.IsPrimitive}");
 #endif
 
-            if(genericParameterType.FullName == "System.Object")
+            if(SerializationHelper.IsObject(genericParameterType))
             {
                 return NSerializeListWithObjectParameter(enumerable);
             }
@@ -123,9 +120,8 @@ namespace TestSandbox.Serialization
 
         private ObjectPtr NSerializeListWithObjectParameter(IEnumerable enumerable)
         {
-            var type = enumerable.GetType();
-
 #if DEBUG
+            var type = enumerable.GetType();
             _logger.Info($"type.FullName = {type.FullName}");
             _logger.Info($"type.Name = {type.Name}");
             _logger.Info($"type.IsGenericType = {type.IsGenericType}");
@@ -135,7 +131,7 @@ namespace TestSandbox.Serialization
 
             foreach(var item in enumerable)
             {
-                if(IsPrimitiveType(item))
+                if(SerializationHelper.IsPrimitiveType(item))
                 {
                     listWithPlainObjects.Add(item);
 
@@ -163,15 +159,29 @@ namespace TestSandbox.Serialization
             }
 
 #if DEBUG
-            _logger.Info($"listWithPlainObjects = {JsonConvert.SerializeObject(listWithPlainObjects, _jsonSerializerSettings)}");
+            _logger.Info($"listWithPlainObjects = {JsonConvert.SerializeObject(listWithPlainObjects, SerializationHelper.JsonSerializerSettings)}");
 #endif
 
-            throw new NotImplementedException();
+            var instanceId = CreateInstanceId();
+
+#if DEBUG
+            _logger.Info($"instanceId = {instanceId}");
+#endif
+
+            var objectPtr = new ObjectPtr(instanceId, enumerable.GetType().FullName);
+
+#if DEBUG
+            _logger.Info($"objectPtr = {objectPtr}");
+#endif
+
+            WriteToFile(listWithPlainObjects, instanceId);
+
+            return objectPtr;
         }
 
         private ObjectPtr NSerialize(ISerializable serializable)
         {
-            var instanceId = Guid.NewGuid().ToString("D");
+            var instanceId = CreateInstanceId();
 
 #if DEBUG
             _logger.Info($"instanceId = {instanceId}");
@@ -193,6 +203,13 @@ namespace TestSandbox.Serialization
             _logger.Info($"plainObject = {plainObject}");
 #endif
 
+            WriteToFile(plainObject, instanceId);
+
+            return objectPtr;
+        }
+
+        private void WriteToFile(object value, string instanceId)
+        {
             var fileName = $"{instanceId}.json";
 
             var fullFileName = Path.Combine(_serializationContext.DirName, fileName);
@@ -201,34 +218,12 @@ namespace TestSandbox.Serialization
             _logger.Info($"fullFileName = {fullFileName}");
 #endif
 
-            File.WriteAllText(fullFileName, JsonConvert.SerializeObject(plainObject, _jsonSerializerSettings));
-
-            return objectPtr;
+            File.WriteAllText(fullFileName, JsonConvert.SerializeObject(value, SerializationHelper.JsonSerializerSettings));
         }
 
-        public bool IsPrimitiveType(object item)
+        private string CreateInstanceId()
         {
-            if(item == null)
-            {
-                return true;
-            }
-
-            var itemType = item.GetType();
-
-#if DEBUG
-            _logger.Info($"itemType.FullName = {itemType.FullName}");
-            _logger.Info($"itemType.Name = {itemType.Name}");
-            _logger.Info($"itemType.IsGenericType = {itemType.IsGenericType}");
-#endif
-
-            switch(itemType.FullName)
-            {
-                case "System.Int32":
-                    return true;
-
-                default: 
-                    return false;
-            }
+            return Guid.NewGuid().ToString("D");
         }
     }
 }
