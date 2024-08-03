@@ -51,6 +51,11 @@ namespace TestSandbox.Serialization
             _logger.Info($"objectPtr = {objectPtr}");
 #endif
 
+            if(objectPtr.IsNull)
+            {
+                return null;
+            }
+
             var instanceId = objectPtr.Id;
 
             if (_deserializationContext.TryGetDeserializedObject(instanceId, out var instance))
