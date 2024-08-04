@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using TestSandbox.Helpers;
 using TestSandbox.Serialization;
-using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class FirstComponent : IObjectToString, ISerializable
+    [SocSerialization]
+    public partial class FirstComponent : IObjectToString
     {
         public FirstComponent()
         {
@@ -19,28 +19,6 @@ namespace TestSandbox.SerializedObjects
 
         private EngineContext _engineContext;
         public FirstComponentData _data;
-
-        Type ISerializable.GetPlainObjectType() => typeof(FirstComponentPo);
-
-        void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
-        {
-            OnWritePlainObject((FirstComponentPo)plainObject, serializer);
-        }
-
-        void OnWritePlainObject(FirstComponentPo plainObject, ISerializer serializer)
-        {
-            plainObject.Data = serializer.GetSerializedObjectPtr(_data);
-        }
-
-        void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
-        {
-            OnReadPlainObject((FirstComponentPo)plainObject, deserializer);
-        }
-
-        void OnReadPlainObject(FirstComponentPo plainObject, IDeserializer deserializer)
-        {
-            _data = deserializer.GetDeserializedObject<FirstComponentData>(plainObject.Data);
-        }
 
         /// <inheritdoc/>
         public override string ToString()

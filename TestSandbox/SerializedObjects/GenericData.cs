@@ -1,35 +1,13 @@
 ﻿using System.Text;
 using TestSandbox.Helpers;
 using TestSandbox.Serialization;
-using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class GenericData<T> : IObjectToString, ISerializable
+    [SocSerialization]
+    public partial class GenericData<T> : IObjectToString
     {
         public T Value { get; set; }
-
-        Type ISerializable.GetPlainObjectType() => typeof(GenericDataPo);
-
-        void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
-        {
-            OnWritePlainObject((GenericDataPo)plainObject, serializer);
-        }
-
-        void OnWritePlainObject(GenericDataPo plainObject, ISerializer serializer)
-        {
-            plainObject.Value = serializer.GetSerializedObjectPtr(Value);
-        }
-
-        void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
-        {
-            OnReadPlainObject((GenericDataPo)plainObject, deserializer);
-        }
-
-        void OnReadPlainObject(GenericDataPo plainObject, IDeserializer deserializer)
-        {
-            Value = deserializer.GetDeserializedObject<T>(plainObject.Value);
-        }
 
         /// <inheritdoc/>
         public override string ToString()

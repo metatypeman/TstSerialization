@@ -1,35 +1,13 @@
 ﻿using System.Text;
 using TestSandbox.Helpers;
 using TestSandbox.Serialization;
-using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class SecondComponentData : IObjectToString, ISerializable
+    [SocSerialization]
+    public partial class SecondComponentData : IObjectToString
     {
         public int SomeField { get; set; }
-
-        Type ISerializable.GetPlainObjectType() => typeof(SecondComponentDataPo);
-
-        void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
-        {
-            OnWritePlainObject((SecondComponentDataPo)plainObject, serializer);
-        }
-
-        void OnWritePlainObject(SecondComponentDataPo plainObject, ISerializer serializer)
-        {
-            plainObject.SomeField = SomeField;
-        }
-
-        void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
-        {
-            OnReadPlainObject((SecondComponentDataPo)plainObject, deserializer);
-        }
-
-        void OnReadPlainObject(SecondComponentDataPo plainObject, IDeserializer deserializer)
-        {
-            SomeField = plainObject.SomeField;
-        }
 
         /// <inheritdoc/>
         public override string ToString()

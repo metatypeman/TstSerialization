@@ -5,7 +5,7 @@ using TestSandbox.Serialization;
 namespace TestSandbox.SerializedObjects
 {
     [SocSerialization]
-    public partial class ObjWithCollectionsInProps : IObjectToString, ISerializable
+    public partial class ObjWithCollectionsInProps : IObjectToString
     {
         public List<object> ObjListProp { get; set; }
 
