@@ -1,39 +1,13 @@
 ﻿using System.Text;
 using TestSandbox.Helpers;
 using TestSandbox.Serialization;
-using TestSandbox.SerializedObjects.PlainObjects;
 
 namespace TestSandbox.SerializedObjects
 {
-    public class ObjWithCollectionsInProps : IObjectToString, ISerializable
+    [SocSerialization]
+    public partial class ObjWithCollectionsInProps : IObjectToString, ISerializable
     {
         public List<object> ObjListProp { get; set; }
-
-        Type ISerializable.GetPlainObjectType() => typeof(ObjWithCollectionsInPropsPo);
-
-        void ISerializable.OnWritePlainObject(object plainObject, ISerializer serializer)
-        {
-            OnWritePlainObject((ObjWithCollectionsInPropsPo)plainObject, serializer);
-        }
-
-        void OnWritePlainObject(ObjWithCollectionsInPropsPo plainObject, ISerializer serializer)
-        {
-            plainObject.ObjListProp = serializer.GetSerializedObjectPtr(ObjListProp);
-
-            //plainObject.SomeField = SomeField;
-        }
-
-        void ISerializable.OnReadPlainObject(object plainObject, IDeserializer deserializer)
-        {
-            OnReadPlainObject((ObjWithCollectionsInPropsPo)plainObject, deserializer);
-        }
-
-        void OnReadPlainObject(ObjWithCollectionsInPropsPo plainObject, IDeserializer deserializer)
-        {
-            ObjListProp = deserializer.GetDeserializedObject<List<object>>(plainObject.ObjListProp);
-
-            //SomeField = plainObject.SomeField;
-        }
 
         /// <inheritdoc/>
         public override string ToString()

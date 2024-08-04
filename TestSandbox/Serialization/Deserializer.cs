@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
 using NLog;
-using System.Collections;
-using System.Linq;
-using System.Runtime.Serialization;
 
 namespace TestSandbox.Serialization
 {

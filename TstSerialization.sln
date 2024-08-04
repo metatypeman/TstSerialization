@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSandbox", "TestSandbox\TestSandbox.csproj", "{11A28EF9-7506-4C1B-885F-E5D11FB1C6E5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceGenerator", "SourceGenerator\SourceGenerator.csproj", "{15D6584A-925D-4275-9DE5-F6A9D65CE468}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{11A28EF9-7506-4C1B-885F-E5D11FB1C6E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11A28EF9-7506-4C1B-885F-E5D11FB1C6E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11A28EF9-7506-4C1B-885F-E5D11FB1C6E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15D6584A-925D-4275-9DE5-F6A9D65CE468}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15D6584A-925D-4275-9DE5-F6A9D65CE468}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15D6584A-925D-4275-9DE5-F6A9D65CE468}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15D6584A-925D-4275-9DE5-F6A9D65CE468}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
