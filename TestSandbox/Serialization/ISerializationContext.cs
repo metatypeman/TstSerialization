@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace TestSandbox.Serialization
+﻿namespace TestSandbox.Serialization
 {
     public interface ISerializationContext
     {
