@@ -571,9 +571,5 @@ namespace SourceGenerator
         {
             _context.AddSource(fileName, SourceText.From(source, Encoding.UTF8));
         }
-
-#if DEBUG
-
-#endif
     }
 }
