@@ -7,13 +7,10 @@ namespace SourceGenerator
     {
         public FieldDeclarationSyntax SyntaxNode { get; set; }
 
-        public string Identifier => GeneratorsHelper.GetFieldIdentifier(SyntaxNode);
-
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.AppendLine($"{nameof(KindFieldType)} = {KindFieldType}");
-            sb.AppendLine($"{nameof(Identifier)} = {Identifier}");
             //sb.AppendLine($"{nameof()} = {}");
             return sb.ToString();
         }
