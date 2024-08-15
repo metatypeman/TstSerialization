@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,37 @@ namespace SourceGenerator
 {
     public static class GeneratorsHelper
     {
+        public static string GetPropertyIdentifier(PropertyItem propertyItem)
+        {
+            return GetPropertyIdentifier(propertyItem.SyntaxNode);
+        }
+
+        public static string GetPropertyIdentifier(PropertyDeclarationSyntax syntaxNode)
+        {
+            return syntaxNode.Identifier.Text;
+        }
+
+        public static string GetFieldIdentifier(FieldItem fieldItem)
+        {
+            return GetFieldIdentifier(fieldItem.SyntaxNode);
+        }
+
+        public static string GetFieldIdentifier(FieldDeclarationSyntax syntaxNode)
+        {
+#if DEBUG
+            ShowSyntaxNode(0, syntaxNode);
+#endif
+
+            var variableDeclarator = syntaxNode.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.VariableDeclaration))?.ChildNodes()?.FirstOrDefault(p => p.IsKind(SyntaxKind.VariableDeclarator));
+
+#if DEBUG
+            FileLogger.WriteLn($"variableDeclarator == null = {variableDeclarator == null}");
+            ShowSyntaxNode(0, variableDeclarator);
+#endif
+
+            return ToString(variableDeclarator.GetText());
+        }
+
         public static string ToString(SourceText sourceText)
         {
             var sb = new StringBuilder();
