@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using NLog;
 using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
 using TestSandbox.Serialization;
 using TestSandbox.SerializedObjects;
 
@@ -14,13 +16,51 @@ namespace TestSandbox
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            Case3_1();
+            CancellationToken();
+            //CancellationTokenSource();
+            //Case3_1();
             //Case3();
             //Case2_1();
             //Case2();
             //Case1();
             //ProcessQueue();
             //CreateGenericType();
+        }
+
+        private static void CancellationToken()
+        {
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            var token = cancellationTokenSource.Token;
+
+            var tokenContent = JsonConvert.SerializeObject(token, Formatting.Indented);
+
+#if DEBUG
+            _logger.Info($"tokenContent = {tokenContent}");
+#endif
+
+            var token2 = JsonConvert.DeserializeObject<CancellationToken>(tokenContent);
+
+#if DEBUG
+            _logger.Info($"token2 = {JsonConvert.SerializeObject(token2, Formatting.Indented)}");
+#endif
+        }
+
+        private static void CancellationTokenSource()
+        {
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            var cancellationTokenSourceContent = JsonConvert.SerializeObject(cancellationTokenSource, Formatting.Indented);
+
+#if DEBUG
+            _logger.Info($"cancellationTokenSourceContent = {cancellationTokenSourceContent}");
+#endif
+
+            var cancellationTokenSource2 = JsonConvert.DeserializeObject<CancellationTokenSource>(cancellationTokenSourceContent);
+
+#if DEBUG
+            _logger.Info($"cancellationTokenSource2 = {JsonConvert.SerializeObject(cancellationTokenSource2, Formatting.Indented)}");
+#endif
         }
 
         private static void Case3_1()
