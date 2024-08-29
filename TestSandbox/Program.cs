@@ -2,6 +2,7 @@
 using NLog;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using TestSandbox.Serialization;
 using TestSandbox.SerializedObjects;
@@ -31,7 +32,31 @@ namespace TestSandbox
         {
             var cancellationTokenSource = new CancellationTokenSource();
 
+            _logger.Info($"cancellationTokenSource = {JsonConvert.SerializeObject(cancellationTokenSource, Formatting.Indented)}");
+            _logger.Info($"cancellationTokenSource.GetHashCode() = {cancellationTokenSource.GetHashCode()}");
+
             var token = cancellationTokenSource.Token;
+
+            var fields = token.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.DeclaredOnly);
+
+#if DEBUG
+            _logger.Info($"fields.Length = {fields.Length}");
+#endif
+
+            foreach (var field in fields)
+            {
+#if DEBUG
+                _logger.Info($"field.Name = {field.Name}");
+#endif
+
+                if (field.Name == "_source")
+                {
+                    var fieldValue = field.GetValue(token);
+
+                    _logger.Info($"fieldValue = {JsonConvert.SerializeObject(fieldValue, Formatting.Indented)}");
+                    _logger.Info($"fieldValue.GetHashCode() = {fieldValue.GetHashCode()}");
+                }
+            }
 
             var tokenContent = JsonConvert.SerializeObject(token, Formatting.Indented);
 
