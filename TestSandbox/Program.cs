@@ -32,10 +32,20 @@ namespace TestSandbox
         {
             var cancellationTokenSource = new CancellationTokenSource();
 
+#if DEBUG
+            _logger.Info($"cancellationTokenSource.GetType().FullName = '{cancellationTokenSource.GetType().FullName}'");
+            _logger.Info($"cancellationTokenSource.GetType().Name = '{cancellationTokenSource.GetType().Name}'");
+#endif
+
             _logger.Info($"cancellationTokenSource = {JsonConvert.SerializeObject(cancellationTokenSource, Formatting.Indented)}");
             _logger.Info($"cancellationTokenSource.GetHashCode() = {cancellationTokenSource.GetHashCode()}");
 
             var token = cancellationTokenSource.Token;
+
+#if DEBUG
+            _logger.Info($"token.GetType().FullName = '{token.GetType().FullName}'");
+            _logger.Info($"token.GetType().Name = '{token.GetType().Name}'");
+#endif
 
             var fields = token.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.DeclaredOnly);
 
