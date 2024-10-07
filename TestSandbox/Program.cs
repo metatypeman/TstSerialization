@@ -3,6 +3,7 @@ using NLog;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using TestSandbox.Serialization;
 using TestSandbox.SerializedObjects;
@@ -17,18 +18,96 @@ namespace TestSandbox
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            CancellationToken();
-            //CancellationTokenSource();
+            TstBase64();
+            //TstLinkedCancellationToken();
+            //TstCancellationToken();
+            //TstCancellationTokenSource();
             //Case3_1();
             //Case3();
             //Case2_1();
             //Case2();
             //Case1();
+            //ProcessDictionary();
             //ProcessQueue();
             //CreateGenericType();
         }
 
-        private static void CancellationToken()
+        private static void TstBase64()
+        {
+            var objPtr1 = new ObjectPtr("Hi! \"tmp\" TTT!", "Int");
+
+#if DEBUG
+            _logger.Info($"objPtr1 = {objPtr1}");
+#endif
+
+            var json1 = JsonConvert.SerializeObject(objPtr1, Formatting.None);
+
+#if DEBUG
+            _logger.Info($"json1 = '{json1}'");
+#endif
+
+            var base64_1 = ToBase64String(json1);
+
+#if DEBUG
+            _logger.Info($"base64_1 = '{base64_1}'");
+#endif
+
+            var jval1 = FromBase64String(base64_1);
+
+#if DEBUG
+            _logger.Info($"jval1 = '{jval1}'");
+#endif
+
+            var objPtr2 = new ObjectPtr("Hello!", "string");
+
+#if DEBUG
+            _logger.Info($"objPtr2 = {objPtr2}");
+#endif
+
+            var json2 = JsonConvert.SerializeObject(objPtr2, Formatting.None);
+
+#if DEBUG
+            _logger.Info($"json2 = '{json2}'");
+#endif
+
+            var base64_2 = ToBase64String(json2);
+
+#if DEBUG
+            _logger.Info($"base64_2 = '{base64_2}'");
+#endif
+
+#if DEBUG
+            _logger.Info($"base64_1 == base64_2 = {base64_1 == base64_2}");
+#endif
+
+            var jval2 = FromBase64String(base64_2);
+
+#if DEBUG
+            _logger.Info($"jval2 = '{jval2}'");
+#endif
+        }
+
+        public static string ToBase64String(string input)
+        {
+            var base64Array = Encoding.UTF8.GetBytes(input);
+            return Convert.ToBase64String(base64Array);
+        }
+
+        public static string FromBase64String(string input)
+        {
+            var base64Array = Convert.FromBase64String(input);
+            return Encoding.UTF8.GetString(base64Array);
+        }
+
+        private static void TstLinkedCancellationToken()
+        {
+            var cancellationTokenSource1 = new CancellationTokenSource();
+            var cancellationTokenSource2 = new CancellationTokenSource();
+
+            var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource1.Token, cancellationTokenSource2.Token);
+        }
+
+        private static void TstCancellationToken()
         {
             var cancellationTokenSource = new CancellationTokenSource();
 
@@ -81,7 +160,7 @@ namespace TestSandbox
 #endif
         }
 
-        private static void CancellationTokenSource()
+        private static void TstCancellationTokenSource()
         {
             var cancellationTokenSource = new CancellationTokenSource();
 
@@ -179,6 +258,29 @@ namespace TestSandbox
             engine._engineContext.SecondComponent._data.SomeField = 42;
 
             _logger.Info($"engine = {engine}");
+
+            _logger.Info("End");
+        }
+
+        private static void ProcessDictionary()
+        {
+            _logger.Info("Begin");
+
+            var dict = new Dictionary<int, string>();
+            dict[1] = "Hi!";
+            dict[5] = "Hello!";
+
+            IDictionary iDict = dict;
+
+            foreach(var item in iDict)
+            {
+                _logger.Info($"item.GetType().FullName = {item.GetType().FullName}");
+
+                var dictEntry = (DictionaryEntry)item;
+
+                _logger.Info($".GetType().FullName = {dictEntry.Key.GetType().FullName}");
+                _logger.Info($".GetType().FullName = {dictEntry.Value.GetType().FullName}");
+            }
 
             _logger.Info("End");
         }

@@ -1,6 +1,6 @@
 ﻿namespace TestSandbox.Serialization
 {
-    public readonly struct ObjectPtr
+    public class ObjectPtr
     {
         public ObjectPtr(bool isNull)
             : this(null, null, isNull)
