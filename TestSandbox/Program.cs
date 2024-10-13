@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,7 +19,8 @@ namespace TestSandbox
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            TstBase64();
+            TstGetSerilizedProperties();
+            //TstBase64();
             //TstLinkedCancellationToken();
             //TstCancellationToken();
             //TstCancellationTokenSource();
@@ -30,6 +32,63 @@ namespace TestSandbox
             //ProcessDictionary();
             //ProcessQueue();
             //CreateGenericType();
+        }
+
+        private static void TstGetSerilizedProperties()
+        {
+            var obj = new Class1();
+
+#if DEBUG
+            _logger.Info($"obj = {obj}");
+#endif
+
+            var objType = obj.GetType();
+
+            //var fields = objType.GetFields(/* BindingFlags.Instance | BindingFlags.GetField | BindingFlags.DeclaredOnly*/);
+            var fields = objType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+#if DEBUG
+            _logger.Info($"fields.Length = {fields.Length}");
+#endif
+
+            foreach (var field in fields)
+            {
+#if DEBUG
+                _logger.Info($"field.Name = {field.Name}");
+#endif
+
+                field.SetValue(obj, 5);
+            }
+
+            var properties = objType.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+#if DEBUG
+            _logger.Info($"properties.Length = {properties.Length}");
+#endif
+
+            foreach (var property in properties)
+            {
+#if DEBUG
+                _logger.Info($"property.Name = {property.Name}");
+                _logger.Info($"property.GetMethod == null = {property.GetMethod == null}");
+                _logger.Info($"property.SetMethod == null = {property.SetMethod == null}");
+#endif
+            }
+
+            var baseFields = objType.BaseType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var baseField in baseFields)
+            {
+#if DEBUG
+                _logger.Info($"baseField.Name = {baseField.Name}");
+#endif
+
+                baseField.SetValue(obj, 5);
+            }
+
+#if DEBUG
+            _logger.Info($"obj (after) = {obj}");
+#endif
         }
 
         private static void TstBase64()
