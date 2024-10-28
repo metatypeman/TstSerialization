@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using NLog;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -19,7 +20,8 @@ namespace TestSandbox
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            TstGetSerilizedProperties();
+            TstConvertSerialiableProperties();
+            //TstGetSerilizedProperties();
             //TstBase64();
             //TstLinkedCancellationToken();
             //TstCancellationToken();
@@ -32,6 +34,29 @@ namespace TestSandbox
             //ProcessDictionary();
             //ProcessQueue();
             //CreateGenericType();
+        }
+
+        private static void TstConvertSerialiableProperties()
+        {
+            var cls3 = new Class3();
+
+            //var newcls3 = Convert.ChangeType(cls3, typeof(IClass3));
+
+            var cls2 = new Class2();
+
+            var cls2Type = cls2.GetType();
+
+            var fields = cls2Type.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+            _logger.Info($"fields.Length = {fields.Length}");
+
+            foreach (var field in fields)
+            {
+                _logger.Info($"field.Name = {field.Name}");
+                _logger.Info($"field.FieldType.FullName = {field.FieldType.FullName}");
+
+                field.SetValue(cls2, cls3);
+            }
         }
 
         private static void TstGetSerilizedProperties()
@@ -55,7 +80,31 @@ namespace TestSandbox
             {
 #if DEBUG
                 _logger.Info($"field.Name = {field.Name}");
+                _logger.Info($"field.IsSpecialName = {field.IsSpecialName}");
+                _logger.Info($"field.CustomAttributes.Count() = {field.CustomAttributes.Count()}");
 #endif
+
+                foreach(var attr in field.CustomAttributes)
+                {
+#if DEBUG
+                    _logger.Info($"attr.AttributeType?.FullName = {attr.AttributeType?.FullName}");
+#endif
+
+                    foreach(var ctorArg in attr.ConstructorArguments)
+                    {
+#if DEBUG
+                        _logger.Info($"ctorArg.Value = {ctorArg.Value}");
+#endif
+                    }
+
+                    foreach (var namedArg in attr.NamedArguments)
+                    {
+#if DEBUG
+                        _logger.Info($"namedArg.MemberName = {namedArg.MemberName}");
+                        _logger.Info($"namedArg.TypedValue.Value = {namedArg.TypedValue.Value}");
+#endif
+                    }
+                }
 
                 field.SetValue(obj, 5);
             }

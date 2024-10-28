@@ -39,6 +39,7 @@ namespace TestSandbox
         private int Field2 = 16;
         private readonly int Field3;
 
+        [Obsolete("Hi from obsolete!")]
         protected int Field4;
 
         public int Field5;
